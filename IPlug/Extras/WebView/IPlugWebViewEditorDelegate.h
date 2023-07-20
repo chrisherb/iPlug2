@@ -13,6 +13,7 @@
 #include "IPlugEditorDelegate.h"
 #include "IPlugWebView.h"
 #include "IPlugPlatformDialogs.h"
+#include "IPlugTimer.h"
 #include "wdl_base64.h"
 #include "json.hpp"
 
@@ -43,6 +44,14 @@ public:
   void CloseWindow() override
   {
     CloseWebView();
+
+    #if defined _DEBUG
+    if (mTimer)
+    {
+      mTimer->Stop();
+      mTimer = nullptr;
+    }
+    #endif
   }
 
   void SendControlValueFromDelegate(int ctrlTag, double normalizedValue) override
@@ -157,13 +166,23 @@ public:
     GetWebRoot(webRoot);
     if (webRoot.GetLength())
     {
-      mPFileWatcher = std::make_unique<Watcher>(webRoot.Get(), [&](const Watcher::Event& e) {
-        DBGMSG("hot-reloading webview content\n");
-        ReloadPageContent();
-        OnUIOpen();
+      mPFileWatcher = std::make_unique<Watcher>(webRoot.Get(), [&](const Watcher::Event& e) { mNeedsReload = true;
       }, 500);
     }
+
+    mTimer = std::unique_ptr<Timer>(Timer::Create(std::bind(&WebViewEditorDelegate::OnTimer, this, std::placeholders::_1), 500));
 #endif
+  }
+
+  void OnTimer(Timer& t)
+  {
+    if (mNeedsReload)
+    {
+      DBGMSG("hot-reloading webview content\n");
+      ReloadPageContent();
+      OnUIOpen();
+      mNeedsReload = false;
+    }
   }
   
   void OnWebContentLoaded() override
@@ -230,6 +249,8 @@ protected:
   
 #if defined _DEBUG && !defined OS_IOS
   std::unique_ptr<choc::file::Watcher> mPFileWatcher;
+  std::unique_ptr<Timer> mTimer;
+  std::atomic<bool> mNeedsReload = false;
 #endif
 };
 
