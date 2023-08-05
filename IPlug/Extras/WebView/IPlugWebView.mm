@@ -74,7 +74,7 @@ using namespace iplug;
    @"WKMenuItemIdentifierOpenLink",
    @"WKMenuItemIdentifierOpenLinkInNewWindow",
    @"WKMenuItemIdentifierPaste",
-   @"WKMenuItemIdentifierReload",
+  //  @"WKMenuItemIdentifierReload",
    @"WKMenuItemIdentifierSearchWeb",
    @"WKMenuItemIdentifierShowHideMediaControls",
    @"WKMenuItemIdentifierToggleFullScreen",
