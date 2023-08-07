@@ -1168,6 +1168,19 @@ struct IRECT
     
     return *this;
   }
+
+  /** Get a subrect (by index) of this IRECT which is a cell (or spans multiple cells horizontally/vertically) in a grid of size (nRows * nColumns)
+   * @param cellIndexX Horizontal index of the desired cell in the cell grid
+   * @param cellIndexY Vertical index of the desired cell in the cell grid
+   * @param nRows Number of rows in the cell grid
+   * @param nColumns Number of columns in the cell grid
+   * @param rowSpan Number of rows the resulting cell should span
+   * @param colSpan Number of columns the resulting cell should span
+   * @return IRECT The resulting subrect */
+  inline IRECT GetGridCell(int cellIndexX, int cellIndexY, int nRows, int nColumns, int rowSpan, int colSpan) const
+  {
+    return GetGridCell(cellIndexX, 1, nColumns, EDirection::Horizontal, colSpan).GetGridCell(cellIndexY, nRows, 1, EDirection::Vertical, rowSpan);
+  }
   
   /** @return true If all the values of this IRECT are within 1/1000th of being an integer */
   bool IsPixelAligned() const
