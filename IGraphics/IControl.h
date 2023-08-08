@@ -332,6 +332,10 @@ public:
    * @param h the new height of the control */
   virtual void SetSize(float w, float h);
 
+  void SetScaleFactor(float scale) { mScaleFactor = scale; }
+
+  float GetScaled(float valueToScale) { return valueToScale * mScaleFactor; }
+
   /** Used internally by the AAX wrapper view interface to set the control parmeter highlight 
    * @param isHighlighted /c true if the control should be highlighted 
    * @param color An integer representing one of three colors that ProTools assigns automated controls */
@@ -558,6 +562,8 @@ protected:
 
   IColor mPTHighlightColor = COLOR_RED;
   bool mPTisHighlighted = false;
+
+  float mScaleFactor = 1.f;
   
   void SetNVals(int nVals)
   {
